@@ -1,29 +1,95 @@
-
-const authorsService = require('../services/authors.service')
+const authorsService = require('../services/authors.service');
 
 const getAuthors = async (req, res) => {
-    const authors = await authorsService.getAuthors();
-    res.json(authors);
+    try {
+        const authors = await authorsService.getAuthors();
+
+        res.status(200).json(authors);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
 };
 
 const getAuthorById = async (req, res) => {
-    const author = await authorsService.getAuthorById(req.params.id);
-    res.json(author);
+    try {
+        const author = await authorsService.getAuthorById(req.params.id);
+
+        if (!author) {
+            return res.status(404).json({
+                error: 'Author not found'
+            });
+        }
+
+        res.status(200).json(author);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
 };
+
 const createAuthor = async (req, res) => {
-    const {name, email, bio} = req.body;
-    const createAuthorConfirm = await authorsService.createAuthor(name, email, bio);
-    res.json(createAuthorConfirm);
+    try {
+        const { name, email, bio } = req.body;
+
+        const author = await authorsService.createAuthor(name, email, bio);
+
+        res.status(201).json(author);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
 };
 
 const updateAuthor = async (req, res) => {
-    const {name, email, bio} = req.body;
-    const updateAuthorConfirm = await authorsService.updateAuthor(req.params.id, name, email, bio);
-    res.json(updateAuthorConfirm);
+    try {
+        const { name, email, bio } = req.body;
+
+        const author = await authorsService.updateAuthor(
+            req.params.id,
+            name,
+            email,
+            bio
+        );
+
+        if (!author) {
+            return res.status(404).json({
+                error: 'Author not found'
+            });
+        }
+
+        res.status(200).json(author);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
 };
+
 const deleteAuthor = async (req, res) => {
-    const deleteAuthorConfirm = await authorsService.deleteAuthor(req.params.id);
-    res.json(deleteAuthorConfirm);
+    try {
+        const author = await authorsService.deleteAuthor(req.params.id);
+
+        if (!author) {
+            return res.status(404).json({
+                error: 'Author not found'
+            });
+        }
+
+        res.status(200).json(author);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
 };
 
 const authorsController = {
@@ -32,9 +98,6 @@ const authorsController = {
     createAuthor,
     updateAuthor,
     deleteAuthor
-}
+};
 
 module.exports = authorsController;
-
-
-
