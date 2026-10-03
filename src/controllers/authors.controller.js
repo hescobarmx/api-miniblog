@@ -41,6 +41,13 @@ const createAuthor = async (req, res) => {
         res.status(201).json(author);
     } catch (error) {
         console.error(error);
+
+        if (error.code === '23505') {
+            return res.status(400).json({
+                error: 'Email already exists'
+            });
+        }
+
         res.status(500).json({
             error: 'Internal server error'
         });
@@ -67,6 +74,13 @@ const updateAuthor = async (req, res) => {
         res.status(200).json(author);
     } catch (error) {
         console.error(error);
+
+        if (error.code === '23505') {
+            return res.status(400).json({
+                error: 'Email already exists'
+            });
+        }
+        
         res.status(500).json({
             error: 'Internal server error'
         });
