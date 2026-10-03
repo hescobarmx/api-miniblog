@@ -24,4 +24,5 @@ CREATE TABLE posts (
 
     FOREIGN KEY (author_id)
         REFERENCES authors(id)
+        ON DELETE CASCADE
 );
