@@ -1,14 +1,10 @@
 
-const app = require('./src/server');
 const { loadEnvFile } = require('node:process');
-
 loadEnvFile();
 
+const app = require('./src/server');
 const pool = require('./src/config/db');
-
 const PORT = process.env.PORT || 3000
-
-
 
 async function startServer(){
     try{

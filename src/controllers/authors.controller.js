@@ -7,20 +7,22 @@ const getAuthors = async (req, res) => {
 };
 
 const getAuthorById = async (req, res) => {
-    const author = await authorsService.getAuthorById();
+    const author = await authorsService.getAuthorById(req.params.id);
     res.json(author);
 };
 const createAuthor = async (req, res) => {
-    const createAuthorConfirm = await authorsService.createAuthor();
+    const {name, email, bio} = req.body;
+    const createAuthorConfirm = await authorsService.createAuthor(name, email, bio);
     res.json(createAuthorConfirm);
 };
 
 const updateAuthor = async (req, res) => {
-    const updateAuthorConfirm = await authorsService.updateAuthor();
+    const {name, email, bio} = req.body;
+    const updateAuthorConfirm = await authorsService.updateAuthor(req.params.id, name, email, bio);
     res.json(updateAuthorConfirm);
 };
 const deleteAuthor = async (req, res) => {
-    const deleteAuthorConfirm = await authorsService.deleteAuthor();
+    const deleteAuthorConfirm = await authorsService.deleteAuthor(req.params.id);
     res.json(deleteAuthorConfirm);
 };
 
