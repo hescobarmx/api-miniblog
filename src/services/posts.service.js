@@ -25,7 +25,7 @@ const updatePost = async (id, author_id, title, content, published) => {
 
 const deletePost = async (id) => {
     const result = await pool.query("DELETE FROM posts WHERE id = $1 RETURNING * ;", [id]);
-    return result.rows;
+    return result.rows[0];
 };
 
 const postsService = {
