@@ -2,6 +2,10 @@
 -- MiniBlog - Database Setup
 -- ============================================
 
+-- Reset para ejecutar los valores con las precondiciones adecuadas
+DROP TABLE IF EXISTS Posts;
+DROP TABLE IF EXISTS authors; 
+
 -- Tabla authors
 
 CREATE TABLE authors (

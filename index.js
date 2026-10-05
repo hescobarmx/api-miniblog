@@ -1,6 +1,4 @@
 
-const { loadEnvFile } = require('node:process');
-loadEnvFile();
 
 const app = require('./src/server');
 const pool = require('./src/config/db');

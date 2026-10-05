@@ -1,110 +1,66 @@
 const authorsService = require('../services/authors.service');
+const asyncHandler = require('../middlewares/asyncHandler');
 
-const getAuthors = async (req, res) => {
-    try {
-        const authors = await authorsService.getAuthors();
+const getAuthors = asyncHandler(async (req, res) => {
+    const authors = await authorsService.getAuthors();
 
-        res.status(200).json(authors);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Internal server error'
+    res.status(200).json(authors);
+});
+
+const getAuthorById = asyncHandler(async (req, res) => {
+    const author = await authorsService.getAuthorById(req.params.id);
+
+    if (!author) {
+        return res.status(404).json({
+            error: 'Author not found'
         });
     }
-};
 
-const getAuthorById = async (req, res) => {
-    try {
-        const author = await authorsService.getAuthorById(req.params.id);
+    res.status(200).json(author);
+});
 
-        if (!author) {
-            return res.status(404).json({
-                error: 'Author not found'
-            });
-        }
+const createAuthor = asyncHandler(async (req, res) => {
+    const { name, email, bio } = req.body;
 
-        res.status(200).json(author);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Internal server error'
+    const author = await authorsService.createAuthor(
+        name,
+        email,
+        bio
+    );
+
+    res.status(201).json(author);
+});
+
+const updateAuthor = asyncHandler(async (req, res) => {
+    const { name, email, bio } = req.body;
+
+    const author = await authorsService.updateAuthor(
+        req.params.id,
+        name,
+        email,
+        bio
+    );
+
+    if (!author) {
+        return res.status(404).json({
+            error: 'Author not found'
         });
     }
-};
 
-const createAuthor = async (req, res) => {
-    try {
-        const { name, email, bio } = req.body;
+    res.status(200).json(author);
+});
 
-        const author = await authorsService.createAuthor(name, email, bio);
+const deleteAuthor = asyncHandler(async (req, res) => {
+    const author = await authorsService.deleteAuthor(req.params.id);
 
-        res.status(201).json(author);
-    } catch (error) {
-        console.error(error);
-
-        if (error.code === '23505') {
-            return res.status(400).json({
-                error: 'Email already exists'
-            });
-        }
-
-        res.status(500).json({
-            error: 'Internal server error'
+    if (!author) {
+        return res.status(404).json({
+            error: 'Author not found'
         });
     }
-};
 
-const updateAuthor = async (req, res) => {
-    try {
-        const { name, email, bio } = req.body;
-
-        const author = await authorsService.updateAuthor(
-            req.params.id,
-            name,
-            email,
-            bio
-        );
-
-        if (!author) {
-            return res.status(404).json({
-                error: 'Author not found'
-            });
-        }
-
-        res.status(200).json(author);
-    } catch (error) {
-        console.error(error);
-
-        if (error.code === '23505') {
-            return res.status(400).json({
-                error: 'Email already exists'
-            });
-        }
-        
-        res.status(500).json({
-            error: 'Internal server error'
-        });
-    }
-};
-
-const deleteAuthor = async (req, res) => {
-    try {
-        const author = await authorsService.deleteAuthor(req.params.id);
-
-        if (!author) {
-            return res.status(404).json({
-                error: 'Author not found'
-            });
-        }
-
-        res.status(200).json(author);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Internal server error'
-        });
-    }
-};
+    res.status(200).json(author);
+});
 
 const authorsController = {
     getAuthors,

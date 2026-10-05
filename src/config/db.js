@@ -1,5 +1,10 @@
+
+const fs = require('fs');
 const { loadEnvFile } = require('node:process');
-loadEnvFile();
+
+if (fs.existsSync('.env')) {
+    loadEnvFile();
+}
 
 const pg = require('pg');
 const { Pool } = pg;

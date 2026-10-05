@@ -1,5 +1,6 @@
 const validateAuthor = (req, res, next) => {
     const { name, email } = req.body;
+   
 
     if (!name || name.trim() === '') {
         return res.status(400).json({
@@ -16,4 +17,13 @@ const validateAuthor = (req, res, next) => {
     next();
 };
 
-module.exports = validateAuthor;
+const validateIdType = (req, res, next)=>{
+     const id  = req.params.id;
+     if(isNaN(id)){
+        res.status(400).json({error: "El id debe ser un numero entero positivo"});
+     }
+
+     next();
+}
+
+module.exports = {validateIdType, validateAuthor}

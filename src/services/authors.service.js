@@ -1,7 +1,6 @@
 const pool  = require('../config/db');
 
 const getAuthors = async() => {
-    console.log("Se llego a getAuthors")
     const result =await pool.query("SELECT * FROM authors");
     return result.rows;
 };
