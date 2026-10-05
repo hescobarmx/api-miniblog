@@ -55,6 +55,12 @@ const updatePost = asyncHandler(async (req, res) => {
         published
     );
 
+    if (!post) {
+    return res.status(404).json({
+        error: 'Post not found'
+    });
+    }
+
    
 
     res.status(200).json(post);
