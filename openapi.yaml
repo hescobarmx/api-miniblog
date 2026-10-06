@@ -14,8 +14,8 @@ info:
 servers:
   - url: http://localhost:3000
     description: Desarrollo local
-  - url: https://TU-APP.up.railway.app   #Remplazar
-    description: Producción en Railway (reemplazar por la URL pública real)  #Remplazar
+  - url: https://api-miniblog-production-ac77.up.railway.app
+    description: Producción en Railway
 
 tags:
   - name: Authors
