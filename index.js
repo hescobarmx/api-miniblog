@@ -11,6 +11,7 @@ async function startServer(){
 
         app.listen(PORT, ()=>{
         console.log(`Escuchando en http://localhost:${PORT}`);
+        console.log("OpenAPI Documentation here -> http://localhost:3000/api-docs")
         });        
       }
       catch(error)

@@ -1,0 +1,467 @@
+openapi: 3.0.3
+
+info:
+  title: API MiniBlog
+  version: 1.0.0
+  description: |
+    API REST sencilla para identificar los principales elementos de una API REST.
+    Realiza operaciones CRUD sobre dos entidades, `authors` y `posts`, con una
+    relación 1:N (un autor tiene muchos posts).
+
+    Todas las respuestas, incluidos los errores, son JSON. Los errores tienen la
+    forma `{ "error": "mensaje" }`.
+
+servers:
+  - url: http://localhost:3000
+    description: Desarrollo local
+  - url: https://TU-APP.up.railway.app   #Remplazar
+    description: Producción en Railway (reemplazar por la URL pública real)  #Remplazar
+
+tags:
+  - name: Authors
+    description: Gestión de autores
+  - name: Posts
+    description: Gestión de posts
+
+paths:
+  /authors:
+    get:
+      tags: [Authors]
+      summary: Listar autores
+      operationId: getAuthors
+      responses:
+        '200':
+          description: Lista de autores (puede estar vacía)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags: [Authors]
+      summary: Crear un autor
+      operationId: createAuthor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '201':
+          description: Autor creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Faltan campos obligatorios o el email ya existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                nombreFaltante:
+                  value:
+                    error: Name is required
+                emailFaltante:
+                  value:
+                    error: Email is required
+                emailDuplicado:
+                  value:
+                    error: Email already exists
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /authors/{id}:
+    parameters:
+      - $ref: '#/components/parameters/AuthorId'
+    get:
+      tags: [Authors]
+      summary: Obtener un autor por id
+      operationId: getAuthorById
+      responses:
+        '200':
+          description: Autor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '404':
+          $ref: '#/components/responses/AuthorNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags: [Authors]
+      summary: Actualizar un autor
+      description: Reemplaza `name`, `email` y `bio` del autor.
+      operationId: updateAuthor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '200':
+          description: Autor actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Id inválido, faltan campos obligatorios o el email ya existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                idInvalido:
+                  value:
+                    error: El id debe ser un numero entero positivo
+                nombreFaltante:
+                  value:
+                    error: Name is required
+                emailDuplicado:
+                  value:
+                    error: Email already exists
+        '404':
+          $ref: '#/components/responses/AuthorNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags: [Authors]
+      summary: Eliminar un autor
+      description: >
+        Elimina el autor y, en cascada, todos sus posts. Devuelve el autor eliminado.
+      operationId: deleteAuthor
+      responses:
+        '200':
+          description: Autor eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          $ref: '#/components/responses/AuthorNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /posts:
+    get:
+      tags: [Posts]
+      summary: Listar posts
+      operationId: getPosts
+      responses:
+        '200':
+          description: Lista de posts (puede estar vacía)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags: [Posts]
+      summary: Crear un post
+      operationId: createPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '201':
+          description: Post creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/InvalidPostBody'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /posts/{id}:
+    parameters:
+      - $ref: '#/components/parameters/PostId'
+    get:
+      tags: [Posts]
+      summary: Obtener un post por id
+      operationId: getPostById
+      responses:
+        '200':
+          description: Post encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          $ref: '#/components/responses/PostNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags: [Posts]
+      summary: Actualizar un post
+      description: Reemplaza `author_id`, `title`, `content` y `published` del post.
+      operationId: updatePost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '200':
+          description: Post actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/InvalidPostBody'
+        '404':
+          $ref: '#/components/responses/PostNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags: [Posts]
+      summary: Eliminar un post
+      description: Devuelve el post eliminado.
+      operationId: deletePost
+      responses:
+        '200':
+          description: Post eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          $ref: '#/components/responses/PostNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /posts/author/{authorId}:
+    get:
+      tags: [Posts]
+      summary: Listar los posts de un autor
+      description: >
+        Devuelve los posts del autor, junto con su `name`, `email` y `bio`.
+        Si no se encuentra ningún post para ese id (el autor no existe o no
+        tiene posts), responde 404.
+      operationId: getPostsByAuthor
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: Id del autor
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      responses:
+        '200':
+          description: Posts del autor (al menos uno)
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 1
+                items:
+                  $ref: '#/components/schemas/PostWithAuthor'
+        '404':
+          description: No se encontraron posts para ese autor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Posts were not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    AuthorId:
+      name: id
+      in: path
+      required: true
+      description: Id del autor
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+    PostId:
+      name: id
+      in: path
+      required: true
+      description: Id del post
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+
+  responses:
+    InvalidId:
+      description: El id no es un número entero válido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: El id debe ser un numero entero positivo
+    AuthorNotFound:
+      description: El autor no existe
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Author not found
+    PostNotFound:
+      description: El post no existe
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Post not found
+    InvalidPostBody:
+      description: Faltan campos obligatorios
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            tituloFaltante:
+              value:
+                error: Title is required
+            contenidoFaltante:
+              value:
+                error: Content is required
+            autorFaltante:
+              value:
+                error: Author ID is required
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Internal server error
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: Mensaje del error
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          maxLength: 100
+          example: Ana García
+        email:
+          type: string
+          maxLength: 150
+          example: ana.garcia@example.com
+        bio:
+          type: string
+          nullable: true
+          example: Escritora especializada en tecnología y desarrollo web.
+        created_at:
+          type: string
+          format: date-time
+    AuthorInput:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: Ana García
+        email:
+          type: string
+          maxLength: 150
+          description: Debe ser único
+          example: ana.garcia@example.com
+        bio:
+          type: string
+          nullable: true
+          example: Escritora especializada en tecnología y desarrollo web.
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        author_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          maxLength: 100
+          example: Introducción al desarrollo web
+        content:
+          type: string
+          example: Una introducción a los conceptos fundamentales del desarrollo web.
+        published:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+    PostInput:
+      type: object
+      required: [author_id, title, content]
+      properties:
+        author_id:
+          type: integer
+          minimum: 1
+          description: Id de un autor existente
+          example: 1
+        title:
+          type: string
+          maxLength: 100
+          example: Introducción al desarrollo web
+        content:
+          type: string
+          example: Una introducción a los conceptos fundamentales del desarrollo web.
+        published:
+          type: boolean
+          default: false
+          example: true
+    PostWithAuthor:
+      allOf:
+        - $ref: '#/components/schemas/Post'
+        - type: object
+          properties:
+            name:
+              type: string
+              description: Nombre del autor
+              example: Ana García
+            email:
+              type: string
+              description: Email del autor
+              example: ana.garcia@example.com
+            bio:
+              type: string
+              nullable: true
+              description: Biografía del autor
+              example: Escritora especializada en tecnología y desarrollo web.

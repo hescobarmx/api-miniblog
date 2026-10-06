@@ -6,8 +6,8 @@ const {validateAuthor, validateIdType} = require('../validations/authors.validat
 
 router.get('/', authorsController.getAuthors );
 router.get('/:id', validateIdType, authorsController.getAuthorById);
-router.post('/', validateAuthor ,authorsController.createAuthor);
-router.put('/:id', validateAuthor, authorsController.updateAuthor);
+router.post('/',validateAuthor ,authorsController.createAuthor);
+router.put('/:id',validateIdType, validateAuthor, authorsController.updateAuthor);
 router.delete('/:id', authorsController.deleteAuthor);
 
 module.exports = router;
