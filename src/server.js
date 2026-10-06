@@ -3,6 +3,7 @@ const apiRouter = require('./routes/index');
 const notFoundHandler = require('./middlewares/notFoundHandler')
 const errorHandler = require('./middlewares/errorhandler');
 
+
 /*SWAGGER: DOCUMENTATION */
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yaml');
