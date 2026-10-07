@@ -14,7 +14,7 @@ info:
 servers:
   - url: http://localhost:3000
     description: Desarrollo local
-  - url: https://api-miniblog-production-ac77.up.railway.app
+  - url: https://api-miniblog-production-ac77.up.railway.app/
     description: Producción en Railway
 
 tags:

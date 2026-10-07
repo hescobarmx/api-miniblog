@@ -121,7 +121,7 @@ CREATE DATABASE miniblog_db OWNER miniblog_user;
 
 ```sql
 \q
-```
+```cl
 
 ## 3. Crear las tablas
 
@@ -258,3 +258,48 @@ https://api-miniblog-production-ac77.up.railway.app/api-docs
 ```
 
 Si algo falla, revisa los **Deploy Logs** del servicio: el mensaje `Base de datos conectada` indica que `DATABASE_URL` es correcta; `Error al conectar con postgres` indica un problema con esa variable o con `NODE_ENV`.
+
+
+# Uso de AI
+
+## 1. Revisión de controladores y creación de middleware global
+
+### Prompt original
+
+> Revisa el siguiente codigo, crea un middleware global para el manejo de errores considerando el codigo y los casos entregados.
+
+Se proporcionaron los controladores de `authors` y `posts`, que inicialmente manejaban los errores individualmente mediante bloques `try/catch`.
+
+### Respuesta
+
+Se propuso centralizar el manejo de errores que estaba repetido en los controladores mediante un middleware global.
+
+El middleware debía encargarse de:
+
+- Registrar los errores.
+- Manejar el error de PostgreSQL `23505`, correspondiente al email duplicado.
+- Responder con `400` cuando el email ya existe.
+- Responder con `500` para errores internos.
+
+También se señaló que los errores `404` de recursos inexistentes debían permanecer en los controladores, porque no representan una excepción del servidor.
+
+Se propuso inicialmente el siguiente middleware:
+
+```js
+const errorHandler = (err, req, res, next) => {
+    console.error(err);
+
+    // Email duplicado
+    if (err.code === '23505') {
+        return res.status(400).json({
+            error: 'Email already exists'
+        });
+    }
+
+    // Error interno
+    res.status(500).json({
+        error: 'Internal server error'
+    });
+};
+
+module.exports = errorHandler;
